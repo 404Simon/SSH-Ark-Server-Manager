@@ -58,9 +58,9 @@ async def stop_server():
             # Ark Server needs SIGINT two times
             logging.info("Sending SIGINT to process group.")
             os.killpg(os.getpgid(server_process.pid), signal.SIGINT)
-            await asyncio.sleep(2)
+            await asyncio.sleep(5)
             os.killpg(os.getpgid(server_process.pid), signal.SIGINT)
-            await asyncio.sleep(1)
+            await asyncio.sleep(5)
 
             if is_server_running():  # if it still running try a more forceful way:
                 logging.info("Server did not stop gracefully, trying SIGTERM.")
