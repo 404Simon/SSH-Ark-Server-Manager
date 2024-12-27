@@ -39,13 +39,13 @@ async def start_server():
             server_process = subprocess.Popen(
                 ["bash", server_script], preexec_fn=os.setsid
             )
-            return "Server started."
+            return "Die Kiste läuft jetzt!"
         except Exception as e:
             logging.error(f"Failed to start the server process: {e}")
-            return "Error starting server."
+            return "Fehler beim Start."
     else:
         logging.info("Server is already running.")
-        return "Server is already running."
+        return "Die Kiste läuft doch schon!!!"
 
 
 async def stop_server():
@@ -137,8 +137,6 @@ async def start_ssh_server():
         server_host_keys=["ssh_host_key"],
         authorized_client_keys=AUTHORIZED_KEYS_FILE,
     )
-    await asyncio.Event().wait()
-    logging.info("SSH server started on port 2222.")
 
 
 if __name__ == "__main__":
@@ -146,5 +144,11 @@ if __name__ == "__main__":
     if not os.path.exists("ssh_host_key"):
         os.system("ssh-keygen -t ed25519 -f ssh_host_key -N ''")
         logging.info("Generated SSH host key.")
+    loop = asyncio.new_event_loop()
 
-    asyncio.run(start_ssh_server())
+    try:
+        loop.run_until_complete(start_ssh_server())
+    except (OSError, asyncssh.Error) as exc:
+        sys.exit('Error starting server: ' + str(exc))
+
+    loop.run_forever()
